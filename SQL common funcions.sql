@@ -1,0 +1,175 @@
+-- WHERE statement 
+SELECT * FROM Customers
+WHERE Country='Mexico';
+
+-- AND, OR, NOT 
+SELECT * FROM Customers
+WHERE Country='Germany' AND City='Berlin'; -- AND
+
+SELECT * FROM Customers
+WHERE City='Berlin' OR City='München'; -- OR
+
+SELECT * FROM Customers
+WHERE NOT Country='Germany'; -- NOT 
+
+SELECT * FROM Customers
+WHERE Country='Germany' AND (City='Berlin' OR City='München');
+
+SELECT * FROM Customers
+WHERE NOT Country='Germany' AND NOT Country='USA';
+
+-- ORDER BY
+SELECT * FROM Customers
+ORDER BY Country DESC; -- DESC descending; ASC ascending
+
+SELECT * FROM Customers
+ORDER BY Country ASC, CustomerName DESC; -- ORDER BY multiple columns 
+
+-- INSERT INTO
+-- Insert Data Only in Specified Columns
+INSERT INTO Customers (CustomerName, City, Country)
+VALUES ('Cardinal', 'Stavanger', 'Norway');
+
+--IS NULL
+SELECT CustomerName, ContactName, Address
+FROM Customers
+WHERE Address IS NULL;
+-- IS NOT NULL
+SELECT CustomerName, ContactName, Address
+FROM Customers
+WHERE Address IS NOT NULL;
+
+-- UPDATE
+UPDATE Customers
+SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+WHERE CustomerID = 1;
+
+-- DELETE
+DELETE FROM Customers WHERE CustomerName='Alfreds Futterkiste';
+
+--TOP
+-- selects the first three records from the "Customers" table
+SELECT TOP 3 * FROM Customers;
+
+-- MIN
+SELECT MIN(Price) AS SmallestPrice
+FROM Products;
+--MAX
+SELECT MAX(Price) AS LargestPrice
+FROM Products;
+
+-- COUNT
+SELECT COUNT(ProductID)
+FROM Products;
+-- AVG
+SELECT AVG(Price)
+FROM Products;
+-- SUM
+SELECT SUM(Quantity)
+FROM OrderDetails;
+
+-- LIKE
+-- selects all customers with a CustomerName starting with "a":
+SELECT * FROM Customers
+WHERE CustomerName LIKE 'a%';
+-- selects all customers with a CustomerName ending with "a":
+SELECT * FROM Customers
+WHERE CustomerName LIKE '%a';
+-- selects all customers with a CustomerName that have "or" in any position:
+SELECT * FROM Customers
+WHERE CustomerName LIKE '%or%';
+-- selects all customers with a CustomerName that have "r" in the second position:
+SELECT * FROM Customers
+WHERE CustomerName LIKE '_r%';
+-- selects all customers with a CustomerName that starts with "a" 
+-- and are at least 3 characters in length:
+SELECT * FROM Customers
+WHERE CustomerName LIKE 'a__%';
+-- selects all customers with a ContactName that starts with "a" and ends with "o":
+SELECT * FROM Customers
+WHERE ContactName LIKE 'a%o';
+-- NOT LIKE
+-- selects all customers with a CustomerName that does NOT start with "a":
+SELECT * FROM Customers
+WHERE CustomerName NOT LIKE 'a%';
+
+-- Wildcard
+-- selects all customers with a City starting with "ber":
+SELECT * FROM Customers
+WHERE City LIKE 'ber%';
+-- selects all customers with a City containing the pattern "es": 
+SELECT * FROM Customers
+WHERE City LIKE '%es%';
+-- selects all customers with a City starting with any character, followed by "ondon":
+SELECT * FROM Customers
+WHERE City LIKE '_ondon';
+-- selects all customers with a City starting with "L",
+-- followed by any character, followed by "n", followed by any character, followed by "on":
+SELECT * FROM Customers
+WHERE City LIKE 'L_n_on';
+-- selects all customers with a City starting with "b", "s", or "p":
+SELECT * FROM Customers
+WHERE City LIKE '[bsp]%';
+-- selects all customers with a City starting with "a", "b", or "c":
+SELECT * FROM Customers
+WHERE City LIKE '[a-c]%';
+-- select all customers with a City NOT starting with "b", "s", or "p":
+SELECT * FROM Customers
+WHERE City LIKE '[!bsp]%';
+
+-- IN 
+-- selects all customers that are located in "Germany", "France" or "UK":
+SELECT * FROM Customers
+WHERE Country IN ('Germany', 'France', 'UK');
+-- selects all customers that are NOT located in "Germany", "France" or "UK":
+SELECT * FROM Customers
+WHERE Country NOT IN ('Germany', 'France', 'UK');
+-- selects all customers that are from the same countries as the suppliers:
+SELECT * FROM Customers
+WHERE Country IN (SELECT Country FROM Suppliers);
+
+--BETWEEN 
+-- selects all products with a price BETWEEN 10 and 20:
+SELECT * FROM Products
+WHERE Price BETWEEN 10 AND 20;
+-- selects all products with a price BETWEEN 10 and 20. In addition; 
+-- do not show products with a CategoryID of 1,2, or 3:
+SELECT * FROM Products
+WHERE Price BETWEEN 10 AND 20
+AND CategoryID NOT IN (1,2,3);
+-- selects all products with a ProductName BETWEEN Carnarvon Tigers and Mozzarella di Giovanni:
+SELECT * FROM Products
+WHERE ProductName BETWEEN 'Carnarvon Tigers' AND 'Mozzarella di Giovanni'
+ORDER BY ProductName;
+-- selects all orders with an OrderDate BETWEEN '01-July-1996' and '31-July-1996':
+SELECT * FROM Orders
+WHERE OrderDate BETWEEN '1996-07-01' AND '1996-07-31';
+
+-- NOT BETWEEN 
+-- To display the products outside the range of the previous example, use NOT BETWEEN:
+SELECT * FROM Products
+WHERE Price NOT BETWEEN 10 AND 20;
+
+-- Alias
+-- The following SQL statement creates two aliases, 
+-- one for the CustomerName column and one for the ContactName column. 
+SELECT 
+CustomerName AS Customer, 
+ContactName AS [Contact Person]
+FROM Customers;
+-- The following SQL statement creates an alias named "Address" that combine four columns
+SELECT 
+CustomerName, 
+Address + ', ' + PostalCode + ' ' + City + ', ' + Country AS Address
+FROM Customers;
+-- selects all the orders from the customer with CustomerID=4 
+SELECT o.OrderID, o.OrderDate, c.CustomerName
+FROM Customers AS c, Orders AS o
+WHERE c.CustomerName='Around the Horn' AND c.CustomerID=o.CustomerID;
+
+--JOIN
+-- INNER JOIN 
+-- SQL statement (that contains an INNER JOIN), that selects records that have matching values in both tables:
+SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
