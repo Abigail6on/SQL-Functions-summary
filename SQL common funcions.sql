@@ -173,3 +173,96 @@ WHERE c.CustomerName='Around the Horn' AND c.CustomerID=o.CustomerID;
 SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
 FROM Orders
 INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+-- SQL FULL OUTER JOIN
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+FULL OUTER JOIN Orders ON Customers.CustomerID=Orders.CustomerID
+ORDER BY Customers.CustomerName;
+-- The following SQL statement returns the cities (only distinct values) from both the "Customers" and the "Suppliers" table:
+SELECT City FROM Customers
+UNION
+SELECT City FROM Suppliers
+ORDER BY City;
+-- The following SQL statement returns the cities (duplicate values also) from both the "Customers" and the "Suppliers" table:
+SELECT City FROM Customers
+UNION ALL
+SELECT City FROM Suppliers
+ORDER BY City; -- including duplicates
+
+-- GROUP BY 
+-- The following SQL statement lists the number of customers in each country:
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country;
+-- The following SQL statement lists the number of customers in each country, sorted high to low:
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+ORDER BY COUNT(CustomerID) DESC;
+-- The following SQL statement lists the number of orders sent by each shipper:
+SELECT Shippers.ShipperName, COUNT(Orders.OrderID) AS NumberOfOrders FROM Orders
+LEFT JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID
+GROUP BY ShipperName;
+
+-- HAVING 
+-- The HAVING clause was added to SQL because the WHERE keyword could not be used with aggregate functions.
+-- The following SQL statement lists the number of customers in each country. Only include countries with more than 5 customers:
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5;
+-- The following SQL statement lists the number of customers in each country, 
+-- sorted high to low (Only include countries with more than 5 customers):
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5
+ORDER BY COUNT(CustomerID) DESC;
+
+-- EXISIST
+-- The following SQL statement returns TRUE and lists the suppliers with a product price less than 20:
+SELECT SupplierName
+FROM Suppliers
+WHERE EXISTS 
+(SELECT ProductName FROM Products 
+WHERE Products.SupplierID = Suppliers.supplierID AND Price < 20);
+
+-- CASE
+-- The following SQL goes through conditions and returns a value when the first condition is met:
+SELECT OrderID, Quantity,
+CASE
+    WHEN Quantity > 30 THEN 'The quantity is greater than 30'
+    WHEN Quantity = 30 THEN 'The quantity is 30'
+    ELSE 'The quantity is under 30'
+END AS QuantityText
+FROM OrderDetails;
+-- The following SQL will order the customers by City. However, if City is NULL, then order by Country:
+SELECT CustomerName, City, Country
+FROM Customers
+ORDER BY
+(CASE
+    WHEN City IS NULL THEN Country
+    ELSE City
+END);
+
+-- ISNULL()
+-- The SQL Server ISNULL() function lets you return an alternative value when an expression is NULL:
+SELECT ProductName, UnitPrice * (UnitsInStock + ISNULL(UnitsOnOrder, 0))
+FROM Products;
+
+-- Stored Procedure
+-- The following SQL statement creates a stored procedure named "SelectAllCustomers" 
+-- that selects all records from the "Customers" table:
+CREATE PROCEDURE SelectAllCustomers
+AS
+SELECT * FROM Customers
+GO;
+-- Execute the stored procedure above as follows:
+EXEC SelectAllCustomers;
+-- selects Customers from a particular City from the "Customers" table:
+CREATE PROCEDURE SelectAllCustomers @City nvarchar(30)
+AS
+SELECT * FROM Customers WHERE City = @City
+GO;
+-- Execute the stored procedure above as follows:
+EXEC SelectAllCustomers @City = 'London';
